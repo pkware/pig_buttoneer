@@ -22,15 +22,26 @@ class PlgContentButtoneer extends JPlugin
 	 */
 	protected $autoloadLanguage = true;
 	/**
-	 * Use the tokens as keys in a lookup table, as each token processes the title
-	 * in a different way.
+	 * Lookup table for the method each token uses to process the title.
 	 *
 	 * @var    array
 	 */
-	protected $tokens = array(
-		'{osapply}' => "_formatOSTitle",
-		'{pkapply}' => "_formatPKTitle"
-	);
+	protected $formatters = array();
+	/**
+	 *	Load the lookup table with the anonymous functions to format the titles,
+	 *	then call the parent.
+	 *
+	 * @param   object  &$subject  The object to observe
+	 * @param   array   $config    Optional associative array of configuration settings.
+	 */
+	public function __construct(&$subject, $config = array())
+	{
+		$this->formatters['{osapply}'] =
+			function($title) { return preg_replace("/\s+/", "_", $title); };
+		$this->formatters['{pkapply}'] =
+			function($title) { return base64_encode($title); };
+		parent::__construct($subject, $config);
+	}
 	/**
 	 * Plugin that inserts a button within content
 	 *
@@ -48,7 +59,7 @@ class PlgContentButtoneer extends JPlugin
 			return;
 		}
 		
-		foreach ($this->tokens as $token => $formatter)
+		foreach ($this->formatters as $token => $formatter)
 		{
 			$base = preg_replace('/[\{\}]/', '', $token);
 			$article->text = str_replace($token, 
@@ -87,30 +98,8 @@ class PlgContentButtoneer extends JPlugin
 	 */
 	private function _buttonText($title, $base, $formatter)
 	{
-		$oldTitle = $this->$formatter($title);
+		$oldTitle = $formatter($title);
 		$baseText = $this->params->get($base);
 		return str_replace('{title}', $oldTitle, $baseText);
-	}
-	/**
-	 * Formats the title for the old-style link.
-	 *
-	 * @param	string	$title	The title to be used
-	 *
-	 * @return	string
-	 */
-	private function _formatOSTitle($title)
-	{
-		return preg_replace("/\s+/", "_", $title);
-	}
-	/**
-	 * Formats the title for the pkforms link.
-	 *
-	 * @param	string	$title	The title to be used
-	 *
-	 * @return	string
-	 */
-	private function _formatPKTitle($title)
-	{
-		return base64_encode($title);
 	}
 }
