@@ -22,6 +22,16 @@ class PlgContentButtoneer extends JPlugin
 	 */
 	protected $autoloadLanguage = true;
 	/**
+	 * Use the tokens as keys in a lookup table, as each token processes the title
+	 * in a different way.
+	 *
+	 * @var    array
+	 */
+	protected $tokens = array(
+		'{osapply}' => "_formatOSTitle",
+		'{pkapply}' => "_formatPKTitle"
+	);
+	/**
 	 * Plugin that inserts a button within content
 	 *
 	 * @param   string   $context   The context of the content being passed to the plugin.
@@ -37,11 +47,13 @@ class PlgContentButtoneer extends JPlugin
 		{
 			return;
 		}
-
-		$article->text = str_replace('{osapply}', 
-			$this->_oldButtonText($article->title), $article->text);
-		$article->text = str_replace('{pkapply}', 
-			$this->_newButtonText($article->title), $article->text);
+		
+		foreach ($this->tokens as $token => $formatter)
+		{
+			$base = preg_replace('/[\{\}]/', '', $token);
+			$article->text = str_replace($token, 
+				$this->_buttonText($article->title, $base, $formatter), $article->text);
+		}
 	}
 	/**
 	 * Checks to see if the plugin has all the correct conditions.
@@ -65,16 +77,18 @@ class PlgContentButtoneer extends JPlugin
 		return false;
 	}
 	/**
-	 * Builds the text for the old button by processing the base text.
+	 * Builds the text for the button by processing its base text.
 	 *
-	 * @param	string	$title	The title to be used
+	 * @param	string	$title		The title to be used in the button
+	 * @param	string	$base		The base text from the plugin param
+	 * @param	string	$formatter	The method to use to make the title ready to be used
 	 *
 	 * @return	string
 	 */
-	private function _oldButtonText($title)
+	private function _buttonText($title, $base, $formatter)
 	{
-		$oldTitle = $this->_formatOldTitle($title);
-		$baseText = $this->params->get('osapply');
+		$oldTitle = $this->$formatter($title);
+		$baseText = $this->params->get($base);
 		return str_replace('{title}', $oldTitle, $baseText);
 	}
 	/**
@@ -84,22 +98,9 @@ class PlgContentButtoneer extends JPlugin
 	 *
 	 * @return	string
 	 */
-	private function _formatOldTitle($title)
+	private function _formatOSTitle($title)
 	{
 		return preg_replace("/\s+/", "_", $title);
-	}
-	/**
-	 * Builds the text for the pkforms button by processing the base text.
-	 *
-	 * @param	string	$title	The title to be used
-	 *
-	 * @return	string
-	 */
-	private function _newButtonText($title)
-	{
-		$newTitle = $this->_formatNewTitle($title);
-		$baseText = $this->params->get('pkapply');
-		return str_replace('{title}', $newTitle, $baseText);
 	}
 	/**
 	 * Formats the title for the pkforms link.
@@ -108,7 +109,7 @@ class PlgContentButtoneer extends JPlugin
 	 *
 	 * @return	string
 	 */
-	private function _formatNewTitle($title)
+	private function _formatPKTitle($title)
 	{
 		return base64_encode($title);
 	}
