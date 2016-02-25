@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension version="3.4" type="plugin" group="content" method="upgrade">
+	<name>plg_content_buttoneer</name>
+	<author>Arlen P Walker</author>
+	<creationDate>February 2016</creationDate>
+	<copyright>Copyright (C) 2016 PKWARE, Inc. All rights reserved.</copyright>
+	<license>GNU General Public License version 2 or later; see LICENSE.txt</license>
+	<authorEmail>arlen.walker@pkware.com</authorEmail>
+	<authorUrl>www.pkware.com</authorUrl>
+	<version>0.8.2</version>
+	<description>PLG_CONTENT_BUTTONEER_XML_DESCRIPTION</description>
+	<files>
+		<filename plugin="buttoneer">buttoneer.php</filename>
+		<filename>index.html</filename>
+	</files>
+	<languages>
+		<language tag="en-GB">language/en-GB.plg_content_buttoneer.ini</language>
+		<language tag="en-GB">language/en-GB.plg_content_buttoneer.sys.ini</language>
+	</languages>
+	<config>
+		<fields name="params">
+			<fieldset name="pkforms"
+					label="PLG_BUTTONEER_FIELDSET_PKFORMS_OPTIONS_LABEL"
+					addfieldpath="plugins/content/buttoneer">
+				<field name="pkapply"
+					type="editor"
+					description="PLG_BUTTONEER_A_BUTTON_DESC"
+					label="PLG_BUTTONEER_A_BUTTON_LABEL"
+					class="inputbox form-control"
+					labelclass="control-label"
+					cols="60"
+					rows="10"
+					filter="safehtml"
+				>
+				</field>
+			</fieldset>
+			<fieldset name="oldstyle"
+					label="PLG_BUTTONEER_FIELDSET_OLDSTYLE_OPTIONS_LABEL"
+					addfieldpath="plugins/content/buttoneer">
+				<field name="osapply"
+					type="editor"
+					description="PLG_BUTTONEER_O_BUTTON_DESC"
+					label="PLG_BUTTONEER_O_BUTTON_LABEL"
+					class="inputbox form-control"
+					labelclass="control-label"
+					cols="60"
+					rows="10"
+					filter="safehtml"
+				>
+				</field>
+			</fieldset>
+		</fields>
+	</config>
+</extension>
